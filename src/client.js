@@ -31,7 +31,7 @@ class WapiClient {
         // Direct mode: send requests directly to W-API
         const response = await axios({
           method,
-          url: `https://${this.apiHost}${endpoint}?instanceId=${this.instanceId}`,
+          url: `https://${this.apiHost}/v1${endpoint}?instanceId=${this.instanceId}`,
           headers: {
             'Authorization': `Bearer ${this.apiToken}`,
             'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ class WapiClient {
         return response.data;
       } else {
         // Local mode: send requests to our local server
-        const url = `${this.baseUrl}${endpoint}`;
+        const url = `${this.baseUrl}/v1${endpoint}`;
         const response = await axios({
           method,
           url,
@@ -52,7 +52,12 @@ class WapiClient {
         return response.data;
       }
     } catch (error) {
-      throw error.response ? error.response.data : error.message;
+      if (error.response) {
+        console.error('Erro da API:', error.response.data);
+        throw error.response.data;
+      }
+      console.error('Erro de conexão:', error.message);
+      throw error;
     }
   }
 
@@ -64,7 +69,7 @@ class WapiClient {
    * Get instance status
    */
   async status() {
-    return this._makeRequest('/instance/status', 'get');
+    return this._makeRequest('/instance/device', 'get');
   }
 
   /**
