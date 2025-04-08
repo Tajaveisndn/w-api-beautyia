@@ -9,9 +9,9 @@ class WApiClient {
    * Create a new W-API client
    * @param {string} apiKey - Your W-API API key
    * @param {string} instanceId - Your W-API instance ID
-   * @param {string} baseUrl - The base URL for the API (default: https://api.w-api.app/v1)
+   * @param {string} baseUrl - The base URL for the API (default: https://api.whatsapp-api.com/v1)
    */
-  constructor(apiKey, instanceId, baseUrl = 'https://api.w-api.app/v1') {
+  constructor(apiKey, instanceId, baseUrl = 'https://api.whatsapp-api.com/v1') {
     if (!apiKey) throw new Error('API key is required');
     if (!instanceId) throw new Error('Instance ID is required');
 
@@ -24,8 +24,12 @@ class WApiClient {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${this.apiKey}`
-      }
+      },
+      timeout: 30000 // 30 segundos de timeout
     });
+
+    // Log da inicialização
+    console.log(`Cliente inicializado para a instância ${this.instanceId} na URL base ${this.baseUrl}`);
   }
 
   /**
@@ -34,10 +38,13 @@ class WApiClient {
    */
   async getInstance() {
     try {
+      console.log(`Obtendo informações da instância ${this.instanceId}...`);
       const response = await this.http.get(`/instances/${this.instanceId}`);
+      console.log('Informações da instância obtidas com sucesso');
       return response.data;
     } catch (error) {
-      this._handleError(error);
+      console.error(`Erro ao obter informações da instância ${this.instanceId}`);
+      return this._handleError(error);
     }
   }
 
@@ -47,10 +54,13 @@ class WApiClient {
    */
   async initInstance() {
     try {
+      console.log(`Inicializando instância ${this.instanceId}...`);
       const response = await this.http.post(`/instances/${this.instanceId}/init`);
+      console.log('Instância inicializada com sucesso');
       return response.data;
     } catch (error) {
-      this._handleError(error);
+      console.error(`Erro ao inicializar instância ${this.instanceId}`);
+      return this._handleError(error);
     }
   }
 
@@ -60,10 +70,13 @@ class WApiClient {
    */
   async getQrCode() {
     try {
+      console.log(`Obtendo QR code para a instância ${this.instanceId}...`);
       const response = await this.http.get(`/instances/${this.instanceId}/qrcode`);
+      console.log('QR code obtido com sucesso');
       return response.data;
     } catch (error) {
-      this._handleError(error);
+      console.error(`Erro ao obter QR code para a instância ${this.instanceId}`);
+      return this._handleError(error);
     }
   }
 
@@ -73,10 +86,13 @@ class WApiClient {
    */
   async logout() {
     try {
+      console.log(`Desconectando instância ${this.instanceId}...`);
       const response = await this.http.post(`/instances/${this.instanceId}/logout`);
+      console.log('Instância desconectada com sucesso');
       return response.data;
     } catch (error) {
-      this._handleError(error);
+      console.error(`Erro ao desconectar instância ${this.instanceId}`);
+      return this._handleError(error);
     }
   }
 
@@ -88,11 +104,14 @@ class WApiClient {
    */
   async sendTextMessage(to, body) {
     try {
+      console.log(`Enviando mensagem de texto para ${to}...`);
       const data = { to, body };
       const response = await this.http.post(`/instances/${this.instanceId}/message/text`, data);
+      console.log(`Mensagem enviada com sucesso para ${to}`);
       return response.data;
     } catch (error) {
-      this._handleError(error);
+      console.error(`Erro ao enviar mensagem de texto para ${to}`);
+      return this._handleError(error);
     }
   }
 
@@ -230,12 +249,30 @@ class WApiClient {
   _handleError(error) {
     if (error.response) {
       // Server responded with non-2xx status
-      throw new Error(`W-API Error: ${error.response.status} - ${error.response.data?.message || JSON.stringify(error.response.data)}`);
+      const statusCode = error.response.status;
+      const errorMessage = error.response.data?.message || JSON.stringify(error.response.data);
+      
+      console.error(`Erro de resposta da API: ${statusCode} - ${errorMessage}`);
+      
+      // Mensagens de erro mais descritivas baseadas no código de status
+      if (statusCode === 404) {
+        console.error('Endpoint não encontrado. Verifique se a URL base está correta e se as credenciais são válidas.');
+        console.error(`URL tentada: ${this.baseUrl}/instances/${this.instanceId}`);
+      } else if (statusCode === 401) {
+        console.error('Autenticação falhou. Verifique sua API key.');
+      } else if (statusCode === 403) {
+        console.error('Acesso proibido. Verifique as permissões da sua conta.');
+      }
+      
+      throw new Error(`W-API Error: ${statusCode} - ${errorMessage}`);
     } else if (error.request) {
       // Request was made but no response
+      console.error('Sem resposta do servidor. Verifique sua conexão de internet e se o servidor está disponível.');
+      console.error(`URL tentada: ${this.baseUrl}`);
       throw new Error('W-API Error: No response received from server');
     } else {
       // Error in setting up the request
+      console.error(`Erro na configuração da requisição: ${error.message}`);
       throw new Error(`W-API Error: ${error.message}`);
     }
   }
