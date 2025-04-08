@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# Runtime data
+.DS_Store
+.idea/
+.vscode/
+
+# Build directories
+dist/
+build/
+
+# Cache directories
+.npm/
+.cache/
+
+# Test coverage
+coverage/ 
