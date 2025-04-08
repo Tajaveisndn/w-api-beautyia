@@ -19,24 +19,31 @@ npm install w-api-beauty-ia
 ## Quick Start
 
 ```javascript
-const api = require('./node_modules/w-api-beauty-ia/src/index');  // This will use the index.js we just created
+const wapi = require('w-api-beauty-ia');
 
-// Example usage
-const start = async () => {
-    try {
-        await api.startServer({
-            port: 3000,
-            instanceId: 'KP4DOT-KDU663-HHS6M9',  // Replace with your instance ID
-            apiToken: 'Q7aGkBpxdvQ4Qg0kALd9RZRfazvlapdDp'       // Replace with your API token
-        });
-        
-        console.log('Server started successfully!');
-    } catch (error) {
-        console.error('Error starting server:', error);
-    }
-};
+// Create a client
+const client = wapi.createClient({
+  instanceId: 'YOUR_INSTANCE_ID',
+  apiToken: 'YOUR_API_TOKEN',
+  directMode: true // send requests directly to W-API servers
+});
 
-start();
+// Using the client
+async function sendMessage() {
+  try {
+    // Check if connected
+    const status = await client.status();
+    console.log('Connection status:', status);
+    
+    // Send a message
+    const result = await client.sendText('5512345678901', 'Hello from W-API Client!');
+    console.log('Message sent:', result);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+sendMessage();
 ```
 
 ## Using Short Variable Names
