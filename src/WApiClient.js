@@ -9,9 +9,9 @@ class WApiClient {
    * Cria um novo cliente W-API
    * @param {string} apiKey - Sua chave de API da W-API
    * @param {string} instanceId - Seu ID de instância da W-API
-   * @param {string} baseUrl - URL base da API (padrão: https://w-api.io/api)
+   * @param {string} baseUrl - URL base da API (padrão: https://w-api.io/api/v1)
    */
-  constructor(apiKey, instanceId, baseUrl = 'https://w-api.io/api') {
+  constructor(apiKey, instanceId, baseUrl = 'https://w-api.app/v1 ') {
     if (!apiKey) throw new Error('API key é obrigatória');
     if (!instanceId) throw new Error('Instance ID é obrigatório');
 
