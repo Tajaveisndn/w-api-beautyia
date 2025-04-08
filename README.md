@@ -30,7 +30,7 @@ npm install w-api-beauty-ia
 ## 🚀 Início Rápido
 
 ```javascript
-const wapi = require('w-api-beauty-ia');
+const wapi = require('w-api-beauty-ia/src');
 
 // Configurações básicas
 const config = {
@@ -54,7 +54,7 @@ async function verificarStatus() {
 
 // Iniciar o servidor
 console.log('Conectando ao W-API...');
-wapi.start(config)
+wapi.startServer(config)
   .then(async () => {
     console.log('✅ Servidor iniciado!');
     console.log('Verificando credenciais...');
@@ -72,7 +72,7 @@ wapi.start(config)
 ### Usando nomes curtos de variáveis
 
 ```javascript
-const { wa, createClient } = require('w-api-beauty-ia');
+const { wa, createClient } = require('w-api-beauty-ia/src');
 
 const client = createClient({
   instanceId: 'SEU_INSTANCE_ID',
@@ -93,7 +93,7 @@ wa.createGroup(client, 'Meu Grupo', ['5512345678901', '5598765432101']);
 ### Iniciando o Servidor API
 
 ```javascript
-const { startServer } = require('w-api-beauty-ia');
+const { startServer } = require('w-api-beauty-ia/src');
 
 // Iniciar o servidor
 startServer({
@@ -158,6 +158,8 @@ startServer({
 
 ### Enviar Mensagem de Texto
 ```javascript
+const { createClient } = require('w-api-beauty-ia/src');
+
 const client = createClient({
   instanceId: 'SEU_INSTANCE_ID',
   apiToken: 'SEU_API_TOKEN'
