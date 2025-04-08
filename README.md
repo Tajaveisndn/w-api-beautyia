@@ -1,154 +1,194 @@
 # W-API Beauty IA
 
-A comprehensive client library for the W-API WhatsApp API service.
+Uma biblioteca cliente completa para o serviço W-API WhatsApp.
 
-## Features
+## 📋 Índice
+- [Características](#-características)
+- [Instalação](#-instalação)
+- [Início Rápido](#-início-rápido)
+- [Uso Básico](#-uso-básico)
+- [Métodos Disponíveis](#-métodos-disponíveis)
+- [Exemplos](#-exemplos)
+- [Suporte](#-suporte)
+- [Licença](#-licença)
 
-- Full support for all W-API endpoints
-- Simplified client interface with short method names
-- Built-in API server for local use
-- Direct connection to W-API servers
-- TypeScript support
+## ✨ Características
 
-## Installation
+- Suporte completo para todos os endpoints do W-API
+- Interface simplificada com nomes curtos de métodos
+- Servidor API integrado para uso local
+- Conexão direta com servidores W-API
+- Suporte a TypeScript
+- Documentação em português
+
+## 📥 Instalação
 
 ```bash
 npm install w-api-beauty-ia
 ```
 
-## Quick Start
+## 🚀 Início Rápido
 
 ```javascript
 const wapi = require('w-api-beauty-ia');
 
-// Create a client
-const client = wapi.createClient({
-  instanceId: 'YOUR_INSTANCE_ID',
-  apiToken: 'YOUR_API_TOKEN',
-  directMode: true // send requests directly to W-API servers
-});
+// Configurações básicas
+const config = {
+  port: 3000,
+  instanceId: 'SEU_INSTANCE_ID',
+  apiToken: 'SEU_API_TOKEN'
+};
 
-// Using the client
-async function sendMessage() {
+// Função para verificar status
+async function verificarStatus() {
   try {
-    // Check if connected
-    const status = await client.status();
-    console.log('Connection status:', status);
-    
-    // Send a message
-    const result = await client.sendText('5512345678901', 'Hello from W-API Client!');
-    console.log('Message sent:', result);
+    const response = await fetch('http://localhost:3000/instance/status');
+    const status = await response.json();
+    console.log('Status da instância:', status);
+    return status;
   } catch (error) {
-    console.error('Error:', error);
+    console.error('❌ Erro ao verificar status:', error);
+    throw error;
   }
 }
 
-sendMessage();
+// Iniciar o servidor
+console.log('Conectando ao W-API...');
+wapi.start(config)
+  .then(async () => {
+    console.log('✅ Servidor iniciado!');
+    console.log('Verificando credenciais...');
+    
+    // Verificar status da instância
+    await verificarStatus();
+  })
+  .catch(erro => {
+    console.error('❌ Erro ao conectar:', erro);
+  });
 ```
 
-## Using Short Variable Names
+## 💡 Uso Básico
 
-You can use the `wa` object for shorter syntax:
+### Usando nomes curtos de variáveis
 
 ```javascript
 const { wa, createClient } = require('w-api-beauty-ia');
 
 const client = createClient({
-  instanceId: 'YOUR_INSTANCE_ID',
-  apiToken: 'YOUR_API_TOKEN',
+  instanceId: 'SEU_INSTANCE_ID',
+  apiToken: 'SEU_API_TOKEN',
   directMode: true
 });
 
-// Send a text message
-wa.text(client, '5512345678901', 'Hello!');
+// Enviar mensagem de texto
+wa.text(client, '5512345678901', 'Olá!');
 
-// Send an image
-wa.image(client, '5512345678901', 'https://example.com/image.jpg', 'Check this out!');
+// Enviar imagem
+wa.image(client, '5512345678901', 'https://exemplo.com/imagem.jpg', 'Veja isso!');
 
-// Create a group
-wa.createGroup(client, 'My Group', ['5512345678901', '5598765432101']);
+// Criar grupo
+wa.createGroup(client, 'Meu Grupo', ['5512345678901', '5598765432101']);
 ```
 
-## Starting the API Server
-
-You can start the built-in API server to use in your local network:
+### Iniciando o Servidor API
 
 ```javascript
 const { startServer } = require('w-api-beauty-ia');
 
-// Start the server
+// Iniciar o servidor
 startServer({
   port: 3000,
-  instanceId: 'YOUR_INSTANCE_ID',
-  apiToken: 'YOUR_API_TOKEN'
+  instanceId: 'SEU_INSTANCE_ID',
+  apiToken: 'SEU_API_TOKEN'
 }).then(() => {
-  console.log('Server started successfully');
+  console.log('Servidor iniciado com sucesso');
 }).catch(error => {
-  console.error('Failed to start server:', error);
+  console.error('Falha ao iniciar servidor:', error);
 });
 ```
 
-Then you can create a client that uses the local server:
+## 📚 Métodos Disponíveis
 
+### Métodos de Instância
+- `status()` - Obter status da conexão
+- `qr()` - Obter código QR para conexão
+- `connect()` - Conectar ao WhatsApp
+- `disconnect()` - Desconectar do WhatsApp
+- `restart()` - Reiniciar a instância
+- `logout()` - Sair do WhatsApp
+
+### Métodos de Mensagem
+- `sendText(phone, message, options)` - Enviar mensagem de texto
+- `sendImage(phone, image, caption, options)` - Enviar imagem
+- `sendDoc(phone, document, filename, caption, options)` - Enviar documento
+- `sendAudio(phone, audio, options)` - Enviar áudio
+- `sendVideo(phone, video, caption, options)` - Enviar vídeo
+- `sendLocation(phone, latitude, longitude, name, address, options)` - Enviar localização
+- `sendContact(phone, contact, options)` - Enviar contato
+- `sendButtons(phone, message, buttons, options)` - Enviar mensagem com botões
+- `sendList(phone, message, list, options)` - Enviar mensagem com lista
+- `reply(messageId, message, options)` - Responder a uma mensagem
+
+### Métodos de Contatos
+- `getContact(phone)` - Obter informações do contato
+- `getContacts()` - Obter todos os contatos
+- `checkContact(phone)` - Verificar se número existe no WhatsApp
+- `saveContact(phone, name)` - Salvar um contato
+- `getAbout(phone)` - Obter status/sobre do contato
+
+### Métodos de Chats
+- `getChat(phone)` - Obter informações do chat
+- `getChats()` - Obter todos os chats
+- `archiveChat(phone)` - Arquivar um chat
+- `unarchiveChat(phone)` - Desarquivar um chat
+- `clearChat(phone)` - Limpar histórico do chat
+- `deleteChat(phone)` - Deletar um chat
+- `pinChat(phone)` - Fixar um chat
+- `unpinChat(phone)` - Desafixar um chat
+
+### Métodos de Grupos
+- `createGroup(name, participants)` - Criar um grupo
+- `getGroup(groupId)` - Obter informações do grupo
+- `updateGroupParticipants(groupId, participants, action)` - Atualizar participantes do grupo
+- `updateGroupSettings(groupId, settings)` - Atualizar configurações do grupo
+- `leaveGroup(groupId)` - Sair do grupo
+- `getGroupInviteCode(groupId)` - Obter código de convite do grupo
+
+## 📝 Exemplos
+
+### Enviar Mensagem de Texto
 ```javascript
-const { createClient } = require('w-api-beauty-ia');
-
 const client = createClient({
-  baseUrl: 'http://localhost:3000',
-  directMode: false // use local server
+  instanceId: 'SEU_INSTANCE_ID',
+  apiToken: 'SEU_API_TOKEN'
 });
 
-// Now you can use the client methods
-client.sendText('5512345678901', 'Hello!');
+client.sendText('5512345678901', 'Olá, como vai?');
 ```
 
-## Available Methods
+### Enviar Imagem com Legenda
+```javascript
+client.sendImage(
+  '5512345678901',
+  'https://exemplo.com/imagem.jpg',
+  'Veja esta imagem!'
+);
+```
 
-### Instance Methods
-- `status()` - Get connection status
-- `qr()` - Get QR code for connection
-- `connect()` - Connect to WhatsApp
-- `disconnect()` - Disconnect from WhatsApp
-- `restart()` - Restart the instance
-- `logout()` - Logout from WhatsApp
+### Criar Grupo
+```javascript
+client.createGroup('Meu Grupo', [
+  '5512345678901',
+  '5598765432101'
+]);
+```
 
-### Message Methods
-- `sendText(phone, message, options)` - Send text message
-- `sendImage(phone, image, caption, options)` - Send image
-- `sendDoc(phone, document, filename, caption, options)` - Send document
-- `sendAudio(phone, audio, options)` - Send audio
-- `sendVideo(phone, video, caption, options)` - Send video
-- `sendLocation(phone, latitude, longitude, name, address, options)` - Send location
-- `sendContact(phone, contact, options)` - Send contact
-- `sendButtons(phone, message, buttons, options)` - Send button message
-- `sendList(phone, message, list, options)` - Send list message
-- `reply(messageId, message, options)` - Reply to a message
+## ❓ Suporte
 
-### Contacts Methods
-- `getContact(phone)` - Get contact info
-- `getContacts()` - Get all contacts
-- `checkContact(phone)` - Check if number exists on WhatsApp
-- `saveContact(phone, name)` - Save a contact
-- `getAbout(phone)` - Get contact about/status
+Para mais informações e suporte, consulte:
+- [Documentação Oficial do W-API](https://w-api.app/docs)
+- [Issues do GitHub](https://github.com/seu-usuario/w-api-beauty-ia/issues)
 
-### Chats Methods
-- `getChat(phone)` - Get chat info
-- `getChats()` - Get all chats
-- `archiveChat(phone)` - Archive a chat
-- `unarchiveChat(phone)` - Unarchive a chat
-- `clearChat(phone)` - Clear chat history
-- `deleteChat(phone)` - Delete a chat
-- `pinChat(phone)` - Pin a chat
-- `unpinChat(phone)` - Unpin a chat
+## 📄 Licença
 
-### Groups Methods
-- `createGroup(name, participants)` - Create a group
-- `getGroup(groupId)` - Get group info
-- `updateGroupParticipants(groupId, participants, action)` - Update group participants
-- `updateGroupSettings(groupId, settings)` - Update group settings
-- `leaveGroup(groupId)` - Leave a group
-- `getGroupInviteCode(groupId)` - Get group invite code
-
-## License
-
-MIT 
+MIT
